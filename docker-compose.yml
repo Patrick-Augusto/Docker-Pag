@@ -1,0 +1,38 @@
+version: '2.21.0-desktop.1'
+
+networks:
+  LudareVPN:
+    external: true 
+
+
+services:
+
+  clouflaretunnel:
+    container_name: clouflaretunnelNode
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    environment:
+      - TUNNEL_TOKEN=Chave do tunel CloudFlare
+    command: tunnel --no-autoupdate run  
+    networks:
+      - LudareVPN
+
+
+
+  dockerpag:
+    container_name: Pagamento
+    image: pagamento/dockerpag:latest
+    build: .
+    command: npm start
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/app
+    networks:
+      - LudareVPN
+    deploy:
+      resources:
+        limits:
+          cpus: '0.8'
+          memory: 512M
